@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Upload, Button } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import { Container, Card } from './styles';
 
 function ViewBoilerplate(): ReactElement {
@@ -10,7 +11,7 @@ function ViewBoilerplate(): ReactElement {
           Testee
         </header>
         <Upload>
-          <Button>Clica aqui em pf!!</Button>
+          <Button icon={<UploadOutlined />}>Clica aqui em pf!!</Button>
         </Upload>
       </Card>
     </Container>
