@@ -1,14 +1,19 @@
 import React, { ReactElement } from 'react';
-import { Button } from './styles';
+import { Upload, Button } from 'antd';
+import { Container, Card } from './styles';
 
 function ViewBoilerplate(): ReactElement {
   return (
-    <div className="App">
-      <header className="App-header">
-        Testee
-      </header>
-      <Button />
-    </div>
+    <Container>
+      <Card>
+        <header>
+          Testee
+        </header>
+        <Upload>
+          <Button>Clica aqui em pf!!</Button>
+        </Upload>
+      </Card>
+    </Container>
   );
 }
 
