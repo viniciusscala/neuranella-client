@@ -12,8 +12,8 @@ export const Container = styled.section`
 export const Card = styled.div`
   background-color: white;
   border-radius: 10px;
-  height: 50vh;
-  width: 50vw;
+  height: 80vh;
+  width: 80vw;
   display: flex;
   flex-direction: column;
   justify-content: space-around;

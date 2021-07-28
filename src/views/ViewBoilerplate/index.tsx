@@ -8,10 +8,10 @@ function ViewBoilerplate(): ReactElement {
     <Container>
       <Card>
         <header>
-          Testee
+          Upload do arquivo
         </header>
-        <Upload>
-          <Button icon={<UploadOutlined />}>Clica aqui em pf!!</Button>
+        <Upload action="http://127.0.0.1:8000/files" directory>
+          <Button icon={<UploadOutlined />}>Enviar diretório</Button>
         </Upload>
       </Card>
     </Container>
