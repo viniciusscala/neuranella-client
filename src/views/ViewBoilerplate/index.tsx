@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-// import { Upload, Button } from 'antd';
+import { Upload, Button } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { Container, Card } from './styles';
@@ -11,10 +11,16 @@ function ViewBoilerplate(): ReactElement {
         <header>
           Upload do arquivo
         </header>
-        {/* <Upload action="http://127.0.0.1:8000/files" directory>
+        <Upload
+          action="http://127.0.0.1:8000/files"
+          // directory
+          onChange={async (e) => {
+            console.log(e);
+          }}
+        >
           <Button icon={<UploadOutlined />}>Enviar diretório</Button>
-        </Upload> */}
-        <button
+        </Upload>
+        {/* <button
           onClick={async () => {
             try {
               const response = await axios.post('http://127.0.0.1:8000/files', {
@@ -29,7 +35,7 @@ function ViewBoilerplate(): ReactElement {
           type="button"
         >
           teste
-        </button>
+        </button> */}
       </Card>
     </Container>
   );
