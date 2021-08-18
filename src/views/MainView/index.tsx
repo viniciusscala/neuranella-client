@@ -1,4 +1,5 @@
-import React, { ReactElement } from 'react';
+/* eslint-disable react/no-array-index-key */
+import React, { ReactElement, useState } from 'react';
 import {
   Upload,
   Button,
@@ -25,6 +26,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import axios from 'axios';
 import {
   Container,
   SideBar,
@@ -35,6 +37,7 @@ import {
   SwitchContainer,
   SliderContainer,
   Graphs,
+  FileInput,
 } from './styles';
 
 const { SubMenu } = Menu;
@@ -82,9 +85,22 @@ const data = [
 ];
 
 function MainView(): ReactElement {
-  const handleFileSelected = (e: any): void => {
-    const files = Array.from(e.target.files);
+  const [files, setFiles] = useState([]);
+
+  const handleFileSelected = async (e: any) => {
+    setFiles(Array.from(e.target.files));
     console.log('files:', files);
+  };
+
+  const handleDecompose = async () => {
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/files', {
+        files,
+      });
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -100,11 +116,10 @@ function MainView(): ReactElement {
           mode="inline"
         >
           <SubMenu key="sub1" icon={<FileOutlined />} title="Files">
-            <Menu.Item key="1">file.inf</Menu.Item>
-            <Menu.Item key="2">file.json</Menu.Item>
+            {files.map((file: any, index) => <Menu.Item key={`file${index}`}>{file.name}</Menu.Item>)}
           </SubMenu>
-          <input onChange={handleFileSelected} type="file" multiple />
         </Menu>
+        <FileInput onChange={handleFileSelected} type="file" multiple />
       </SideBar>
       <TopMenu>
         <TopMenuSection>
@@ -142,7 +157,7 @@ function MainView(): ReactElement {
         </TopMenuSection>
         <TopMenuSection>
           <TopMenuSectionTitle>Actions</TopMenuSectionTitle>
-          <Button type="primary">Decompose</Button>
+          <Button type="primary" onClick={handleDecompose}>Decompose</Button>
           <Button>Save</Button>
         </TopMenuSection>
       </TopMenu>
