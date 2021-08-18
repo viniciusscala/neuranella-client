@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
-import { ViewBoilerplate } from './views';
+import { MainView } from './views';
 
 function App(): ReactElement {
   return (
-    <ViewBoilerplate />
+    <MainView />
   );
 }
 
