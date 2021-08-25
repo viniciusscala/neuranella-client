@@ -102,7 +102,7 @@ function MainView(): ReactElement {
         formData.append('bin', binFile);
       }
       if (jsonFile) {
-        formData.append('bin', jsonFile);
+        formData.append('json', jsonFile);
       }
       const response = await axios.post('http://127.0.0.1:8000/uploadfile', formData, {
         headers: {
