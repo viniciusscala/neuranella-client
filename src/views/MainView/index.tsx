@@ -9,6 +9,7 @@ import {
   InputNumber,
   Row,
   Col,
+  Spin,
 } from 'antd';
 import {
   FileOutlined,
@@ -42,50 +43,14 @@ import {
 
 const { SubMenu } = Menu;
 
-const data = [
-  { name: '1', uv: 300, pv: 456 },
-  { name: '2', uv: -145, pv: 230 },
-  { name: '3', uv: -100, pv: 345 },
-  { name: '4', uv: -8, pv: 450 },
-  { name: '5', uv: 100, pv: 321 },
-  { name: '6', uv: 9, pv: 235 },
-  { name: '7', uv: 53, pv: 267 },
-  { name: '8', uv: 252, pv: -378 },
-  { name: '9', uv: 79, pv: -210 },
-  { name: '10', uv: 294, pv: -23 },
-  { name: '12', uv: 43, pv: 45 },
-  { name: '13', uv: -74, pv: 90 },
-  { name: '14', uv: -71, pv: 130 },
-  { name: '15', uv: -117, pv: 11 },
-  { name: '16', uv: -186, pv: 107 },
-  { name: '17', uv: -16, pv: 926 },
-  { name: '18', uv: -125, pv: 653 },
-  { name: '19', uv: 222, pv: 366 },
-  { name: '20', uv: 372, pv: 486 },
-  { name: '21', uv: 182, pv: 512 },
-  { name: '22', uv: 164, pv: 302 },
-  { name: '23', uv: 316, pv: 425 },
-  { name: '24', uv: 131, pv: 467 },
-  { name: '25', uv: 291, pv: -190 },
-  { name: '26', uv: -47, pv: 194 },
-  { name: '27', uv: -415, pv: 371 },
-  { name: '28', uv: -182, pv: 376 },
-  { name: '29', uv: -93, pv: 295 },
-  { name: '30', uv: -99, pv: 322 },
-  { name: '31', uv: -52, pv: 246 },
-  { name: '32', uv: 154, pv: 33 },
-  { name: '33', uv: 205, pv: 354 },
-  { name: '34', uv: 70, pv: 258 },
-  { name: '35', uv: -25, pv: 359 },
-  { name: '36', uv: -59, pv: 192 },
-  { name: '37', uv: -63, pv: 464 },
-  { name: '38', uv: -91, pv: -2 },
-  { name: '39', uv: -66, pv: 154 },
-  { name: '40', uv: -50, pv: 186 },
-];
-
 function MainView(): ReactElement {
   const [files, setFiles] = useState([]);
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [range, setRange] = useState<[number, number]>([0, 1800]);
+
+  const begin = 800;
+  const margin = 1000;
 
   const handleFileSelected = async (e: any) => {
     setFiles(Array.from(e.target.files));
@@ -94,6 +59,7 @@ function MainView(): ReactElement {
 
   const handleDecompose = async () => {
     try {
+      setLoading(true);
       const formData = new FormData();
       const binFile = files.find((file: any) => file.name.includes('.bin') || file.name.includes('.BIN'));
       const jsonFile = files.find((file: any) => file.name.includes('.json') || file.name.includes('.JSON'));
@@ -109,8 +75,17 @@ function MainView(): ReactElement {
           'Content-Type': 'multipart/form-data',
         },
       });
+      setChartData(response.data.channel0_array.filter((
+        filterElement: number, filterIndex: number,
+      ) => (
+        filterIndex > range[0] && filterIndex < range[1]
+      )).map((element: number, index: number) => (
+        { name: index + range[0], value: element }
+      )));
+      setLoading(false);
       console.log(response);
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   };
@@ -118,7 +93,7 @@ function MainView(): ReactElement {
   return (
     <Container>
       <SideBar>
-        <Title>Neuranella</Title>
+        <Title>Neuronella</Title>
         <Menu
           // eslint-disable-next-line @typescript-eslint/no-empty-function
           onClick={() => { }}
@@ -149,11 +124,20 @@ function MainView(): ReactElement {
           <TopMenuSectionTitle>Data length (s)</TopMenuSectionTitle>
           <Row>
             <SliderContainer>
-              <InputNumber style={{ width: '50px' }} />
-              <Slider range={{ draggableTrack: true }} defaultValue={[20, 50]} />
-              <InputNumber style={{ width: '50px' }} />
+              <InputNumber style={{ width: '50px' }} value={range[0]} onChange={(value: number) => { setRange([value, range[1]]); }} />
+              <Slider
+                range={{ draggableTrack: true }}
+                min={0}
+                max={300000}
+                defaultValue={[0, 1000]}
+                onChange={(value: [number, number]) => { setRange(value); }}
+                value={range}
+              />
+              <InputNumber style={{ width: '50px' }} value={range[1]} onChange={(value: number) => { setRange([range[0], value]); }} />
             </SliderContainer>
-            Tota: 14 s
+            Tota:
+            {' '}
+            {range[1] - range[0]}
           </Row>
         </TopMenuSection>
         <TopMenuSection>
@@ -174,29 +158,30 @@ function MainView(): ReactElement {
         </TopMenuSection>
       </TopMenu>
       <Graphs>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            width={500}
-            height={300}
-            data={data}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend verticalAlign="top" wrapperStyle={{ lineHeight: '40px' }} />
-            <ReferenceLine y={0} stroke="#000" />
-            <Brush dataKey="name" height={30} stroke="#8884d8" />
-            <Bar dataKey="pv" fill="#8884d8" />
-            <Bar dataKey="uv" fill="#82ca9d" />
-          </BarChart>
-        </ResponsiveContainer>
+        {loading ? (<Spin />) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              width={500}
+              height={300}
+              data={chartData}
+              margin={{
+                top: 5,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend verticalAlign="top" wrapperStyle={{ lineHeight: '40px' }} />
+              <ReferenceLine y={0} stroke="#000" />
+              <Brush dataKey="name" height={30} stroke="#8884d8" />
+              <Bar dataKey="value" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </Graphs>
     </Container>
   );
