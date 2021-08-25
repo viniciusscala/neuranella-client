@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { MainView } from './views';
+import { MainView, ViewBoilerplate } from './views';
 
 function App(): ReactElement {
   return (

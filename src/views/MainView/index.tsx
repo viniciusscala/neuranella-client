@@ -89,13 +89,25 @@ function MainView(): ReactElement {
 
   const handleFileSelected = async (e: any) => {
     setFiles(Array.from(e.target.files));
-    console.log('files:', files);
+    console.log('files:', Array.from(e.target.files));
   };
 
   const handleDecompose = async () => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/files', {
-        files,
+      const formData = new FormData();
+      const binFile = files.find((file: any) => file.name.includes('.bin') || file.name.includes('.BIN'));
+      const jsonFile = files.find((file: any) => file.name.includes('.json') || file.name.includes('.JSON'));
+      console.log(binFile, jsonFile);
+      if (binFile) {
+        formData.append('bin', binFile);
+      }
+      if (jsonFile) {
+        formData.append('bin', jsonFile);
+      }
+      const response = await axios.post('http://127.0.0.1:8000/uploadfile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
       console.log(response);
     } catch (error) {

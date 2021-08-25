@@ -12,7 +12,7 @@ function ViewBoilerplate(): ReactElement {
           Upload do arquivo
         </header>
         <Upload
-          action="http://127.0.0.1:8000/files"
+          action="http://127.0.0.1:8000/uploadfile"
           // directory
           onChange={async (e) => {
             console.log(e);
