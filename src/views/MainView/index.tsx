@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable react/no-array-index-key */
 import React, { ReactElement, useState } from 'react';
 import {
@@ -28,6 +29,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import axios from 'axios';
+import Blob from 'blob';
 import {
   Container,
   SideBar,
@@ -48,6 +50,7 @@ function MainView(): ReactElement {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [range, setRange] = useState<[number, number]>([0, (300000 / 30000)]);
+  let data: number[] = [];
 
   const handleFileSelected = async (e: any) => {
     setFiles(Array.from(e.target.files));
@@ -73,19 +76,43 @@ function MainView(): ReactElement {
           'Content-Type': 'multipart/form-data',
         },
       });
-      setChartData(response.data.channel0_array.filter((
-        filterElement: number, filterIndex: number,
-      ) => (
-        filterIndex > range[0] && filterIndex < range[1]
-      )).map((element: number, index: number) => (
+      setChartData(response.data.channel0_array.map((element: number, index: number) => (
         { name: index + range[0], value: element }
       )));
       setLoading(false);
       console.log(response);
+
+      data = response.data.channel0_array;
     } catch (error) {
       setLoading(false);
       console.log(error);
     }
+  };
+
+  const saveAs = (blob: any, fileName: string) => {
+    const url = window.URL.createObjectURL(blob);
+
+    const anchorElem = document.createElement('a');
+    anchorElem.style.display = 'none';
+    anchorElem.href = url;
+    anchorElem.download = fileName;
+
+    document.body.appendChild(anchorElem);
+    anchorElem.click();
+
+    document.body.removeChild(anchorElem);
+
+    // On Edge, revokeObjectURL should be called only after
+    // a.click() has completed, atleast on EdgeHTML 15.15048
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+    }, 1000);
+  };
+
+  const handleSave = () => {
+    const b = new Blob(data, { type: 'application/octet-stream' });
+    const fileName = 'teste.bin';
+    saveAs(b, fileName);
   };
 
   return (
@@ -153,7 +180,7 @@ function MainView(): ReactElement {
         <TopMenuSection>
           <TopMenuSectionTitle>Actions</TopMenuSectionTitle>
           <Button type="primary" onClick={handleDecompose}>Decompose</Button>
-          <Button>Save</Button>
+          <Button onClick={handleSave} disabled={chartData.length <= 0}>Save</Button>
         </TopMenuSection>
       </TopMenu>
       <Graphs>
