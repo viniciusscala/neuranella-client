@@ -47,10 +47,7 @@ function MainView(): ReactElement {
   const [files, setFiles] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [range, setRange] = useState<[number, number]>([0, 1800]);
-
-  const begin = 800;
-  const margin = 1000;
+  const [range, setRange] = useState<[number, number]>([0, (300000 / 30000)]);
 
   const handleFileSelected = async (e: any) => {
     setFiles(Array.from(e.target.files));
@@ -63,13 +60,14 @@ function MainView(): ReactElement {
       const formData = new FormData();
       const binFile = files.find((file: any) => file.name.includes('.bin') || file.name.includes('.BIN'));
       const jsonFile = files.find((file: any) => file.name.includes('.json') || file.name.includes('.JSON'));
-      console.log(binFile, jsonFile);
       if (binFile) {
         formData.append('bin', binFile);
       }
       if (jsonFile) {
         formData.append('json', jsonFile);
       }
+      formData.append('start', String(range[0]));
+      formData.append('length', String(range[1] - range[0]));
       const response = await axios.post('http://127.0.0.1:8000/uploadfile', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -128,16 +126,17 @@ function MainView(): ReactElement {
               <Slider
                 range={{ draggableTrack: true }}
                 min={0}
-                max={300000}
-                defaultValue={[0, 1000]}
+                max={(300000 / 30000)}
+                defaultValue={[0, (300000 / 30000)]}
                 onChange={(value: [number, number]) => { setRange(value); }}
                 value={range}
               />
               <InputNumber style={{ width: '50px' }} value={range[1]} onChange={(value: number) => { setRange([range[0], value]); }} />
             </SliderContainer>
-            Tota:
+            Total:
             {' '}
             {range[1] - range[0]}
+            {' segundos'}
           </Row>
         </TopMenuSection>
         <TopMenuSection>
