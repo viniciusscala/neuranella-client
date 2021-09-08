@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Upload, Button } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+// import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { Container, Card } from './styles';
 
@@ -18,7 +18,7 @@ function ViewBoilerplate(): ReactElement {
             console.log(e);
           }}
         >
-          <Button icon={<UploadOutlined />}>Enviar diretório</Button>
+          <Button>Enviar diretório</Button>
         </Upload>
         {/* <button
           onClick={async () => {
